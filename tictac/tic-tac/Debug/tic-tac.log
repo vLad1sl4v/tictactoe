@@ -1,0 +1,4 @@
+﻿  tic-tac.cpp
+C:\programming\cpp\Incubator\Baza\tictac\tic-tac\tic-tac.cpp(201,12): warning C4244: аргумент: преобразование "time_t" в "unsigned int", возможна потеря данных
+C:\programming\cpp\Incubator\Baza\tictac\tic-tac\tic-tac.cpp(218,12): warning C4244: аргумент: преобразование "time_t" в "unsigned int", возможна потеря данных
+  tic-tac.vcxproj -> C:\programming\cpp\Incubator\Baza\tictac\tic-tac\Debug\tic-tac.exe
