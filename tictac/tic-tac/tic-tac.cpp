@@ -5,14 +5,16 @@
 
 using namespace std;
 
-const int CENTRAL_NUMBER = 5;
 const int PARTIES = 8;
 const int MAX_CHOICE = 2;
 const int ARRAY_SIZE = 3;
+const int CENTRAL_NUMBER = (1 + ARRAY_SIZE * ARRAY_SIZE) / 2;
 const int ZERO_NUMBER = 4;
 const int CROSSES = 1;
 const int GOOD[4] = { 1, 3, 7, 9 };
+const int SIZE_GOOD = 4;
 const int BAD[4] = { 2, 4, 6, 8 };
+const int SIZE_BAD = 4;
 
 int field[3][3] = { {0,0,0},{0,0,0},{0,0,0} };
 char symbols[5] = { '-','X','-','-', 'O' };
@@ -155,8 +157,8 @@ void showFieldNumeration()
 
 	for (int j = 1; j < ARRAY_SIZE * ARRAY_SIZE; j += ARRAY_SIZE)
 	{
-		cout << " " << j << " " << "|" << " " << j + 1 << " " << "|" << " " << j + 2;
-		if (j + 2 != ARRAY_SIZE * ARRAY_SIZE)
+		cout << " " << j << " " << "|" << " " << j + 1 << " " << "|" << " " << j + ARRAY_SIZE - 1;
+		if (j + ARRAY_SIZE - 1 != ARRAY_SIZE * ARRAY_SIZE)
 			cout << endl << " ---------" << endl;
 	}
 	cout << endl;
@@ -215,7 +217,7 @@ int checkPreWinLose(int sign)
 				if (checkWin())
 				{
 					field[i][j] = 0;
-					return j + i * 3 + 1;
+					return j + i * ARRAY_SIZE + 1;
 				}
 				field[i][j] = 0;
 			}
@@ -243,12 +245,14 @@ bool checkWin()
 			sumRow += field[i][j];
 			sumColumn += field[j][i];
 		}
-		if (sumRow == 3 or sumRow == 12 or sumColumn == 3 or sumColumn == 12)
+		if (sumRow == CROSSES * ARRAY_SIZE or sumRow == ZERO_NUMBER * ARRAY_SIZE 
+		or sumColumn == CROSSES * ARRAY_SIZE or sumColumn == ZERO_NUMBER * ARRAY_SIZE)
 		{
 			return true;
 		}
 	}
-	if (sumDiagonal1 == 3 or sumDiagonal1 == 12 or sumDiagonal2 == 3 or sumDiagonal2 == 12)
+	if (sumDiagonal1 == CROSSES * ARRAY_SIZE or sumDiagonal1 == ZERO_NUMBER * ARRAY_SIZE 
+	or sumDiagonal2 == CROSSES * ARRAY_SIZE or sumDiagonal2 == ZERO_NUMBER * ARRAY_SIZE)
 	{
 		return true;
 	}
@@ -263,13 +267,13 @@ void machineFirstTurn(int machineCrossCounter)
 
 	if (machineCrossCounter == 1)
 	{
-		changeCell(5, computerSign());
-		computerChoice = 5;
+		changeCell(CENTRAL_NUMBER, computerSign());
+		computerChoice = CENTRAL_NUMBER;
 	}
 	else
 	{
-		random = rand() % 4 + 1;
-		computerChoice = GOOD[random - 1];
+		random = rand() % SIZE_GOOD;
+		computerChoice = GOOD[random];
 		changeCell(computerChoice, computerSign());
 		Sleep(2000);
 	}
@@ -296,7 +300,7 @@ void machineTurn()
 		}
 		else if (checkTrap())
 		{
-			random = BAD[rand() % 4];
+			random = BAD[rand() % SIZE_BAD];
 		}
 		else if (getGoodCell() != 0)
 		{
@@ -304,7 +308,7 @@ void machineTurn()
 		}
 		else
 		{
-			random = rand() % 9 + 1;
+			random = rand() % (ARRAY_SIZE * ARRAY_SIZE) + 1;
 		}
 	} while (!emptyCellCheck(random));
 
@@ -376,9 +380,7 @@ void changeCell(int userTurnChoice, int valueNumber)
 
 int getGoodCell()
 {
-	int goodSize = sizeof(GOOD) / sizeof(GOOD[0]);
-
-	for (int i = 0; i < goodSize; i++)
+	for (int i = 0; i < SIZE_GOOD; i++)
 	{
 		if (emptyCellCheck(GOOD[i]))
 			return GOOD[i];
@@ -389,7 +391,6 @@ int getGoodCell()
 
 bool checkTrap()
 {
-
 	bool trap = false;
 	int columnSum = 0;
 	int columnSum3 = 0;
