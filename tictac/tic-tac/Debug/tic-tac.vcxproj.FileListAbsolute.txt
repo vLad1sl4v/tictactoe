@@ -1,2 +1,0 @@
-C:\programming\cpp\Incubator\Baza\tictac\tic-tac\Debug\tic-tac.exe
-D:\repo\Tic-tac-toe\tictactoe\tictac\tic-tac\Debug\tic-tac.exe
