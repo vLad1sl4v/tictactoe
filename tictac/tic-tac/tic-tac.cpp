@@ -1,4 +1,4 @@
-﻿#include <iostream>
+#include <iostream>
 #include <cstdlib>
 #include <Windows.h>
 #include <ctime>
@@ -33,22 +33,21 @@ void showIntro();
 void userTurn();
 bool emptyCellCheck(int);
 bool checkTrap();
-int* checkPreLose();
-int checkPreWin();
+int checkPreWinLose(int);
 bool checkWin();
 void showField();
 void printError(int);
 void printMachineTurn(int);
 void changeCell(int, int);
 int computerSign();
+int userSign();
 int getGoodCell();
-
 
 int main()
 {
 	int choice = 0;
 	int machineCrossCounter = 0;
-
+	
 	for (int i = 0; i < PARTIES; i++)
 	{
 		gameCounter++;
@@ -133,7 +132,6 @@ int main()
 			showFieldNumeration();
 			showTie();
 		}
-
 	}
 
 	return 0;
@@ -197,52 +195,15 @@ int computerSign()
 		return ZERO_NUMBER;
 }
 
-int* checkPreLose()
+int userSign()
 {
-	int sumRow = 0;
-	int sumColumn = 0;
-	int sumDiagonal1 = 0;
-	int sumDiagonal2 = 0;
-	int coordinates[2] = { 0,0 };
-
-	for (int i = 0; i < ARRAY_SIZE; i++)
-	{
-		sumRow = 0;
-		sumColumn = 0;
-
-		sumDiagonal1 += field[i][i];
-		sumDiagonal2 += field[i][ARRAY_SIZE - i - 1];
-		for (int j = 0; j < ARRAY_SIZE; j++)
-		{
-			sumRow += field[i][j];
-			sumColumn += field[j][i];
-		}
-		if (sumRow == 2 or sumRow == 8)
-		{
-			coordinates[0] = 1;
-			coordinates[1] = i + 1;
-		}
-		else if (sumColumn == 2 or sumColumn == 8)
-		{
-			coordinates[0] = 2;
-			coordinates[1] = i + 1;
-		}
-	}
-	if (sumDiagonal1 == 2 or sumDiagonal1 == 8)
-	{
-		coordinates[0] = 3;
-		coordinates[1] = 1;
-	}
-	else if (sumDiagonal2 == 2 or sumDiagonal2 == 8)
-	{
-		coordinates[0] = 3;
-		coordinates[1] = 2;
-	}
-
-	return coordinates;
+	if (counter % 2 == 0)
+		return CROSSES;
+	else
+		return ZERO_NUMBER;
 }
 
-int checkPreWin()
+int checkPreWinLose(int sign)
 {
 	for (int i = 0; i < ARRAY_SIZE; i++)
 	{
@@ -250,7 +211,7 @@ int checkPreWin()
 		{
 			if (field[i][j] == 0)
 			{
-				field[i][j] = computerSign();
+				field[i][j] = sign;
 				if (checkWin())
 				{
 					field[i][j] = 0;
@@ -312,39 +273,22 @@ void machineFirstTurn(int machineCrossCounter)
 		changeCell(computerChoice, computerSign());
 		Sleep(2000);
 	}
-
 }
 
 void machineTurn()
 {
 	int random = 0;
-	int coordinates[2] = { 0,0 };
-	coordinates[0] = checkPreLose()[0];
-	coordinates[1] = checkPreLose()[1];
-
 	srand(time(NULL));
-
+	
 	do
 	{
-		if (checkPreWin())
+		if (checkPreWinLose(computerSign()))
 		{
-			random = checkPreWin();
+			random = checkPreWinLose(computerSign());
 		}
-		else if (coordinates[0] == 1)
+		else if (checkPreWinLose(userSign()))
 		{
-			random = rand() % 3 + 1 + 3 * (coordinates[1] - 1);
-		}
-		else if (coordinates[0] == 2)
-		{
-			random = rand() % 3 * 3 + coordinates[1];
-		}
-		else if (coordinates[1] == 1)
-		{
-			random = rand() % 3 * 4 + coordinates[1];
-		}
-		else if (coordinates[1] == 2)
-		{
-			random = rand() % 3 * 2 + 1 + coordinates[1];
+			random = checkPreWinLose(userSign());
 		}
 		else if (emptyCellCheck(CENTRAL_NUMBER))
 		{
@@ -362,11 +306,7 @@ void machineTurn()
 		{
 			random = rand() % 9 + 1;
 		}
-
-
 	} while (!emptyCellCheck(random));
-
-
 
 	computerChoice = random;
 	changeCell(random, computerSign());
@@ -403,7 +343,6 @@ void userTurn()
 			cout << "Cell already occupied" << endl;
 			cout << "Try another cell" << endl;
 		}
-
 
 	} while (!emptyCellCheck(userTurnChoice) or userTurnChoice < 1 or userTurnChoice > ARRAY_SIZE * ARRAY_SIZE);
 
